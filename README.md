@@ -35,6 +35,38 @@ python port_scanner.py --start-ip 192.168.1.1 --end-ip 192.168.1.10 --ports 22,8
 python port_scanner.py --cidr 192.168.1.0/28 --ports 20-1024 --timeout 0.7 --workers 200 --json-out results.json --csv-out results.csv
 ```
 
+## Web UI
+Run a local-only web interface that wraps the scanner:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 web_app.py
+```
+
+Open http://127.0.0.1:5000 in your browser.
+
+## Demo Output
+
+1. Start a local HTTP server (leave it running):
+
+```bash
+python3 -m http.server 8000
+```
+
+2. Run the scanner in another terminal:
+
+```bash
+python3 port_scanner.py --start-ip 127.0.0.1 --end-ip 127.0.0.1 --ports 8000 --services --progress --no-resolve
+```
+
+Example output:
+```text
+Progress: 1/1 (100.0%) | elapsed 0:00 | eta 0:00
+127.0.0.1:8000/tcp open http-alt
+```
+
 ## Usage
 
 ```text
@@ -106,6 +138,9 @@ python -m unittest discover -s tests
 ├── docs
 │   └── USAGE.md
 ├── port_scanner.py
+├── web_app.py
+├── templates
+│   └── index.html
 └── tests
     └── test_port_scanner.py
 ```

@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Network Port Scanner</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+    :root {
+      --bg: #0b1220;
+      --bg-glow: #1b2a4a;
+      --panel: #121a2c;
+      --panel-2: #0f1726;
+      --accent: #f0b429;
+      --accent-2: #48bb78;
+      --text: #e9eef9;
+      --muted: #a3b1cc;
+      --danger: #ef4444;
+      --shadow: 0 20px 60px rgba(6, 12, 24, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(240, 180, 41, 0.18), transparent 60%),
+                  radial-gradient(1000px 600px at 90% 20%, rgba(72, 187, 120, 0.16), transparent 55%),
+                  linear-gradient(180deg, var(--bg), var(--bg-glow));
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 48px 24px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      margin: 0 auto;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    main {
+      display: grid;
+      gap: 24px;
+      grid-template-columns: minmax(0, 1fr);
+      padding: 24px;
+      max-width: 1100px;
+      margin: 0 auto 48px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(18, 26, 44, 0.95), rgba(12, 20, 36, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      animation: floatIn 0.6s ease-out;
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 1.4rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    input::placeholder {
+      color: rgba(163, 177, 204, 0.6);
+    }
+
+    .checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      margin-top: 8px;
+    }
+
+    .checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    button {
+      padding: 12px 20px;
+      background: linear-gradient(120deg, var(--accent), #fbd38d);
+      color: #1b1506;
+      border: none;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 12px 24px rgba(240, 180, 41, 0.25);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 30px rgba(240, 180, 41, 0.35);
+    }
+
+    .hint {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fecaca;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "IBM Plex Mono", "Fira Mono", monospace;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(72, 187, 120, 0.15);
+      color: #bbf7d0;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 0 24px 32px;
+      font-size: 0.85rem;
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Network Port Scanner</h1>
+    <p>Run fast TCP or UDP scans locally. Keep it safe: only scan targets you own or have permission to test.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Scan Controls</h2>
+      {% if errors %}
+        {% for error in errors %}
+          <div class="error">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post">
+        <div class="grid">
+          <div>
+            <label for="start_ip">Start IP</label>
+            <input id="start_ip" name="start_ip" value="{{ form.start_ip }}" placeholder="192.168.1.1" />
+          </div>
+          <div>
+            <label for="end_ip">End IP</label>
+            <input id="end_ip" name="end_ip" value="{{ form.end_ip }}" placeholder="192.168.1.20" />
+          </div>
+          <div>
+            <label for="cidr">CIDR</label>
+            <input id="cidr" name="cidr" value="{{ form.cidr }}" placeholder="192.168.1.0/24" />
+          </div>
+          <div>
+            <label for="ports">Ports</label>
+            <input id="ports" name="ports" value="{{ form.ports }}" placeholder="22,80,443,8000-8100" />
+          </div>
+          <div>
+            <label for="top_ports">Top Ports</label>
+            <input id="top_ports" name="top_ports" value="{{ form.top_ports }}" placeholder="100" />
+          </div>
+          <div>
+            <label for="protocol">Protocol</label>
+            <select id="protocol" name="protocol">
+              <option value="tcp" {% if form.protocol == "tcp" %}selected{% endif %}>TCP</option>
+              <option value="udp" {% if form.protocol == "udp" %}selected{% endif %}>UDP</option>
+            </select>
+          </div>
+          <div>
+            <label for="timeout">Timeout (seconds)</label>
+            <input id="timeout" name="timeout" value="{{ form.timeout }}" />
+          </div>
+          <div>
+            <label for="workers">Workers</label>
+            <input id="workers" name="workers" value="{{ form.workers }}" />
+          </div>
+        </div>
+
+        <div class="checkboxes">
+          <label><input type="checkbox" name="resolve" {% if form.resolve %}checked{% endif %} /> Reverse DNS</label>
+          <label><input type="checkbox" name="services" {% if form.services %}checked{% endif %} /> Service names</label>
+        </div>
+
+        <div class="hint">Tip: Use either CIDR or start/end IP. Combine ports + top ports if you want both.</div>
+        <div class="hint">Scan limit: {{ max_targets }} total targets.</div>
+
+        <div style="margin-top: 16px;">
+          <button type="submit">Run Scan</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Results</h2>
+      {% if results %}
+        <div class="badge">{{ results | length }} open ports found</div>
+        <div style="margin-top: 16px; overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Hostname</th>
+                <th>Port</th>
+                <th>Protocol</th>
+                <th>Service</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in results %}
+                <tr>
+                  <td>{{ row.ip }}</td>
+                  <td>{{ row.hostname }}</td>
+                  <td>{{ row.port }}</td>
+                  <td>{{ row.protocol }}</td>
+                  <td>{{ row.service }}</td>
+                  <td>{{ row.state }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="hint">No results yet. Run a scan to populate this table.</p>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer>
+    Local-only UI. Do not expose this server to the public internet.
+  </footer>
+</body>
+</html>

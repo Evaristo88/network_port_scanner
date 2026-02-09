@@ -45,6 +45,14 @@ python port_scanner.py --cidr 192.168.1.0/24 --ports 22,80,443 --services --prog
 python port_scanner.py --cidr 192.168.1.0/24 --ports 53,123 --protocol udp
 ```
 
+### 9) Start the web UI (local-only)
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 web_app.py
+```
+
 ## Port List Syntax
 - Single port: `80`
 - Comma-separated: `22,80,443`
@@ -61,6 +69,25 @@ python port_scanner.py --cidr 192.168.1.0/24 --ports 53,123 --protocol udp
   - `protocol`: `tcp` or `udp`.
   - `service`: Well-known service name, when available.
   - `state`: Always `open` for discovered open ports.
+
+## Demo Output
+Start a local server and scan it to see guaranteed output.
+
+Terminal A:
+```bash
+python3 -m http.server 8000
+```
+
+Terminal B:
+```bash
+python3 port_scanner.py --start-ip 127.0.0.1 --end-ip 127.0.0.1 --ports 8000 --services --progress --no-resolve
+```
+
+Example output:
+```text
+Progress: 1/1 (100.0%) | elapsed 0:00 | eta 0:00
+127.0.0.1:8000/tcp open http-alt
+```
 
 ## UDP Notes
 UDP scans are best-effort. Many UDP services do not respond to empty probes, so a lack of response does not always mean the port is closed.

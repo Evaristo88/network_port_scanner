@@ -1,1 +1,1 @@
-# No external dependencies.
+Flask>=2.3
