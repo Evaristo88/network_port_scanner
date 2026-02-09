@@ -121,6 +121,10 @@ ip,hostname,port,protocol,service,state
 ## Safety and Ethics
 Only scan networks and hosts that you own or have explicit permission to test. Unauthorized scanning may be illegal or violate policies.
 
+## Security Notes
+- The web UI binds to `127.0.0.1` by default to avoid exposing scans publicly.
+- Do not change the host binding unless you understand the security risks.
+
 ## Documentation
 - See [docs/USAGE.md](docs/USAGE.md) for detailed usage examples.
 
