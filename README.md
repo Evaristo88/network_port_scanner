@@ -35,8 +35,10 @@ python port_scanner.py --start-ip 192.168.1.1 --end-ip 192.168.1.10 --ports 22,8
 python port_scanner.py --cidr 192.168.1.0/28 --ports 20-1024 --timeout 0.7 --workers 200 --json-out results.json --csv-out results.csv
 ```
 
-## Web UI
-Run a local-only web interface that wraps the scanner:
+## Web UI (Local-Only)
+Run a local-only web interface that wraps the scanner. This binds to 127.0.0.1
+on your machine, so users who clone the repo will only scan from their own
+computer (not your IP).
 
 ```bash
 python3 -m venv .venv

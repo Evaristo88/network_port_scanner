@@ -53,6 +53,9 @@ pip install -r requirements.txt
 python3 web_app.py
 ```
 
+This UI binds to 127.0.0.1, so it only runs on your own machine. Anyone who
+pulls the repo will scan from their local host, not from the author's IP.
+
 ## Port List Syntax
 - Single port: `80`
 - Comma-separated: `22,80,443`
