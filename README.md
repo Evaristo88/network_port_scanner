@@ -72,13 +72,24 @@ Only scan networks and hosts that you own or have explicit permission to test. U
 ## Documentation
 - See [docs/USAGE.md](docs/USAGE.md) for detailed usage examples.
 
+## Tests
+Run the unit tests with Python's built-in `unittest` runner:
+
+```bash
+python -m unittest
+```
+
 ## Project Structure
 ```
 .
 ├── README.md
+├── .gitignore
+├── requirements.txt
 ├── docs
 │   └── USAGE.md
-└── port_scanner.py
+├── port_scanner.py
+└── tests
+  └── test_port_scanner.py
 ```
 
 ## License

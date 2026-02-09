@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Test/cache
+.pytest_cache/
+.coverage
+
+# OS
+.DS_Store
+
+# Outputs
+*.json
+*.csv
