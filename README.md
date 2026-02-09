@@ -1,5 +1,7 @@
 # Network Port Scanner
 
+[![Tests](https://github.com/Evaristo88/network_port_scanner/actions/workflows/tests.yml/badge.svg)](https://github.com/Evaristo88/network_port_scanner/actions/workflows/tests.yml)
+
 A simple, educational Python port scanner that attempts TCP connections across an IP range and port list to identify open ports.
 
 ## Features
