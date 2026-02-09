@@ -1,7 +1,7 @@
 # Detailed Usage Guide
 
 ## Overview
-This project provides a clean, educational TCP port scanner using Python's `socket` module. It attempts TCP connections to determine whether ports are open.
+This project provides a clean, educational TCP/UDP port scanner using Python's `socket` module. It attempts TCP connections or UDP probes to determine whether ports are open.
 
 ## Command Examples
 
@@ -30,11 +30,27 @@ python port_scanner.py --cidr 192.168.1.0/28 --ports 20-1024 --json-out results.
 python port_scanner.py --cidr 192.168.1.0/24 --ports 22,80 --no-resolve
 ```
 
+### 6) Scan the top 100 common ports
+```bash
+python port_scanner.py --cidr 192.168.1.0/24 --top-ports 100
+```
+
+### 7) Show progress and resolve service names
+```bash
+python port_scanner.py --cidr 192.168.1.0/24 --ports 22,80,443 --services --progress
+```
+
+### 8) UDP scan (best-effort)
+```bash
+python port_scanner.py --cidr 192.168.1.0/24 --ports 53,123 --protocol udp
+```
+
 ## Port List Syntax
 - Single port: `80`
 - Comma-separated: `22,80,443`
 - Range: `8000-8100`
 - Mixed: `22,80,443,8000-8100`
+- Top ports: `--top-ports 50`
 
 ## Understanding Results
 - Each open port is printed immediately.
@@ -42,7 +58,12 @@ python port_scanner.py --cidr 192.168.1.0/24 --ports 22,80 --no-resolve
   - `ip`: Target IPv4 address.
   - `hostname`: Reverse DNS name (if enabled, otherwise `null`).
   - `port`: Open port number.
+  - `protocol`: `tcp` or `udp`.
+  - `service`: Well-known service name, when available.
   - `state`: Always `open` for discovered open ports.
+
+## UDP Notes
+UDP scans are best-effort. Many UDP services do not respond to empty probes, so a lack of response does not always mean the port is closed.
 
 ## Common Issues
 - **Slow scans**: Increase `--workers` or reduce `--timeout`.

@@ -1,6 +1,6 @@
 import unittest
 
-from port_scanner import build_ip_list, parse_ports
+from port_scanner import build_ip_list, build_port_list, get_top_ports, parse_ports
 
 
 class TestParsePorts(unittest.TestCase):
@@ -42,6 +42,21 @@ class TestBuildIpList(unittest.TestCase):
             build_ip_list(None, None, "192.168.1.0/30"),
             ["192.168.1.1", "192.168.1.2"],
         )
+
+
+class TestTopPorts(unittest.TestCase):
+    def test_top_ports_positive_count(self) -> None:
+        top_ports = get_top_ports(5)
+        self.assertEqual(len(top_ports), 5)
+
+    def test_build_port_list_with_top_ports(self) -> None:
+        ports = build_port_list(None, 3)
+        self.assertEqual(len(ports), 3)
+
+    def test_build_port_list_combines_sources(self) -> None:
+        ports = build_port_list("80,443", 3)
+        self.assertIn(80, ports)
+        self.assertIn(443, ports)
 
 
 if __name__ == "__main__":

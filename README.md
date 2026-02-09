@@ -6,7 +6,10 @@ A simple, educational Python port scanner that attempts TCP connections across a
 
 ## Features
 - Scans IPv4 ranges (start/end) or CIDR blocks.
-- Scans single ports, comma-separated lists, or ranges (e.g., `22,80,443,8000-8100`).
+- Scans TCP or UDP with a selectable protocol.
+- Scans single ports, port ranges, or top N common ports.
+- Progress and ETA display for long scans.
+- Optional service name resolution.
 - Concurrency via thread pool for faster scans.
 - CSV and JSON report output.
 - Clear, commented code for learning.
@@ -35,10 +38,12 @@ python port_scanner.py --cidr 192.168.1.0/28 --ports 20-1024 --timeout 0.7 --wor
 ## Usage
 
 ```text
-python port_scanner.py [--start-ip IP --end-ip IP | --cidr CIDR] --ports PORTS
+python port_scanner.py [--start-ip IP --end-ip IP | --cidr CIDR]
+                       [--ports PORTS] [--top-ports N]
+                       [--protocol tcp|udp]
                        [--timeout SECONDS] [--workers N]
                        [--json-out PATH] [--csv-out PATH]
-                       [--no-resolve]
+                       [--no-resolve] [--services] [--progress]
 ```
 
 ### Arguments
@@ -46,11 +51,15 @@ python port_scanner.py [--start-ip IP --end-ip IP | --cidr CIDR] --ports PORTS
 - `--end-ip`: Last IPv4 address in the scan range.
 - `--cidr`: CIDR block (e.g., `10.0.0.0/24`).
 - `--ports`: Port list or ranges (e.g., `22,80,443,8000-8100`).
+- `--top-ports`: Scan the top N common ports (e.g., `20`, `50`, `100`).
+- `--protocol`: Protocol to scan (`tcp` or `udp`, default: `tcp`).
 - `--timeout`: Socket timeout in seconds (default: 0.5).
 - `--workers`: Number of concurrent threads (default: 100).
 - `--json-out`: Save results to a JSON file.
 - `--csv-out`: Save results to a CSV file.
 - `--no-resolve`: Skip DNS reverse lookups for speed.
+- `--services`: Resolve well-known service names.
+- `--progress`: Show progress and ETA during the scan.
 
 ## Output
 The tool prints open ports to the console and optionally saves a report:
@@ -58,14 +67,21 @@ The tool prints open ports to the console and optionally saves a report:
 JSON:
 ```json
 [
-  {"ip": "192.168.1.2", "hostname": "host-2", "port": 22, "state": "open"}
+  {
+    "ip": "192.168.1.2",
+    "hostname": "host-2",
+    "port": 22,
+    "protocol": "tcp",
+    "service": "ssh",
+    "state": "open"
+  }
 ]
 ```
 
 CSV:
 ```csv
-ip,hostname,port,state
-192.168.1.2,host-2,22,open
+ip,hostname,port,protocol,service,state
+192.168.1.2,host-2,22,tcp,ssh,open
 ```
 
 ## Safety and Ethics
@@ -78,7 +94,7 @@ Only scan networks and hosts that you own or have explicit permission to test. U
 Run the unit tests with Python's built-in `unittest` runner:
 
 ```bash
-python -m unittest
+python -m unittest discover -s tests
 ```
 
 ## Project Structure
@@ -91,7 +107,7 @@ python -m unittest
 │   └── USAGE.md
 ├── port_scanner.py
 └── tests
-  └── test_port_scanner.py
+    └── test_port_scanner.py
 ```
 
 ## License
