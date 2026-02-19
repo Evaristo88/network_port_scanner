@@ -1,0 +1,15 @@
+[Unit]
+Description=Network Port Scanner Agent
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/evaristo/network_port_scanner
+ExecStart=/home/evaristo/network_port_scanner/.venv/bin/python /home/evaristo/network_port_scanner/agent.py --config /home/evaristo/network_port_scanner/agent_config.json
+Restart=on-failure
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/home/evaristo/network_port_scanner/.env
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,68 @@
+{
+  "scan": {
+    "cidr": "auto",
+    "start_ip": null,
+    "end_ip": null,
+    "ports": "22,80,443,8080",
+    "top_ports": 20,
+    "protocol": "tcp",
+    "timeout": 0.5,
+    "workers": 120,
+    "resolve": true,
+    "services": true,
+    "interval_seconds": 300
+  },
+  "storage": {
+    "db_path": "agent_data/agent.db",
+    "retention_days": 7
+  },
+  "alerts": {
+    "email": {
+      "enabled": true,
+      "smtp_host": "smtp.gmail.com",
+      "smtp_port": 587,
+      "use_tls": true,
+      "username": "you@gmail.com",
+      "app_password": "replace-with-app-password",
+      "from_addr": "you@gmail.com",
+      "to_addrs": ["you@gmail.com"]
+    },
+    "whatsapp": {
+      "enabled": false,
+      "account_sid": null,
+      "auth_token": null,
+      "from_number": null,
+      "to_number": null,
+      "status_callback": null,
+      "account_sid_env": "TWILIO_ACCOUNT_SID",
+      "auth_token_env": "TWILIO_AUTH_TOKEN",
+      "from_number_env": "TWILIO_WHATSAPP_FROM",
+      "to_number_env": "TWILIO_WHATSAPP_TO",
+      "status_callback_env": "TWILIO_STATUS_CALLBACK"
+    }
+  },
+  "reports": {
+    "csv_enabled": true,
+    "pdf_enabled": true,
+    "output_dir": "agent_data/reports"
+  },
+  "ml": {
+    "enabled": false,
+    "min_samples": 20,
+    "contamination": 0.05,
+    "retrain_every": 10,
+    "model_path": "agent_data/models/isoforest.joblib"
+  },
+  "recommendations": {
+    "ai_enabled": false
+  },
+  "traffic": {
+    "enabled": false,
+    "mode": "gateway",
+    "interface": null
+  },
+  "rate_limit": {
+    "enabled": true,
+    "cooldown_minutes": 15
+  }
+}

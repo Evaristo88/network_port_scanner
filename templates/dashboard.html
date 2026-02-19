@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Network Agent Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Mono:wght@400;700&display=swap');
+
+    :root {
+      --ink: #0a0f14;
+      --bg: #f6f4ef;
+      --panel: #ffffff;
+      --accent: #f97316;
+      --accent-2: #0ea5e9;
+      --accent-3: #22c55e;
+      --muted: #5b6470;
+      --border: rgba(10, 15, 20, 0.08);
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Mono", "Courier New", monospace;
+      color: var(--ink);
+      background: radial-gradient(900px 500px at 5% 5%, rgba(249, 115, 22, 0.12), transparent 60%),
+                  radial-gradient(800px 400px at 95% 10%, rgba(14, 165, 233, 0.14), transparent 60%),
+                  var(--bg);
+    }
+
+    header {
+      padding: 40px 24px 12px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Fraunces", "Times New Roman", serif;
+      font-size: clamp(2.2rem, 3vw, 3.2rem);
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 800px;
+      font-size: 1rem;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto 60px;
+      padding: 12px 24px 0;
+      display: grid;
+      gap: 20px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      animation: floatIn 0.5s ease-out;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+      font-family: "Fraunces", "Times New Roman", serif;
+    }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(249, 115, 22, 0.12);
+      color: #9a3412;
+      font-size: 0.85rem;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 12px 0 16px;
+    }
+
+    .filters label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-family: "Space Mono", "Courier New", monospace;
+      font-size: 0.85rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.8rem;
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(249, 115, 22, 0.25);
+    }
+
+    .btn.secondary {
+      background: var(--accent-2);
+      box-shadow: 0 12px 24px rgba(14, 165, 233, 0.2);
+    }
+
+    .btn.ghost {
+      background: rgba(14, 165, 233, 0.1);
+      color: #075985;
+      box-shadow: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(14, 165, 233, 0.12);
+      color: #075985;
+      font-size: 0.75rem;
+    }
+
+    .status-ok {
+      color: #15803d;
+    }
+
+    .status-muted {
+      color: var(--muted);
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 220px !important;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 12px 24px 40px;
+      font-size: 0.85rem;
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Network Agent Dashboard</h1>
+    <p>Live view of recent scans, alerts, and device inventory from the monitoring agent.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Activity Timeline</h2>
+      {% if timeseries %}
+        <div class="grid">
+          <div>
+            <h3>Open Ports + Devices</h3>
+            <canvas id="chart-ports"></canvas>
+          </div>
+          <div>
+            <h3>New Devices + New Ports</h3>
+            <canvas id="chart-changes"></canvas>
+          </div>
+        </div>
+      {% else %}
+        <p class="empty">Time-series data will appear after a few scans.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <h2>Recent Scans</h2>
+      {% if recent_scans %}
+        <table>
+          <thead>
+            <tr>
+              <th>Started</th>
+              <th>Scope</th>
+              <th>Protocol</th>
+              <th>Hosts</th>
+              <th>Ports</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for started, scope, protocol, hosts, ports in recent_scans %}
+              <tr>
+                <td>{{ started }}</td>
+                <td>{{ scope }}</td>
+                <td><span class="tag">{{ protocol }}</span></td>
+                <td>{{ hosts }}</td>
+                <td>{{ ports }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty">No scans recorded yet.</p>
+      {% endif %}
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Alert Center</h2>
+        <form method="get" class="filters">
+          <div>
+            <label>Severity</label>
+            <select name="severity">
+              <option value="all" {% if filters.severity == "all" %}selected{% endif %}>All</option>
+              <option value="low" {% if filters.severity == "low" %}selected{% endif %}>Low</option>
+              <option value="medium" {% if filters.severity == "medium" %}selected{% endif %}>Medium</option>
+              <option value="high" {% if filters.severity == "high" %}selected{% endif %}>High</option>
+            </select>
+          </div>
+          <div>
+            <label>Type</label>
+            <select name="type">
+              <option value="all" {% if filters.type == "all" %}selected{% endif %}>All</option>
+              <option value="change" {% if filters.type == "change" %}selected{% endif %}>Change</option>
+              <option value="ml_anomaly" {% if filters.type == "ml_anomaly" %}selected{% endif %}>ML Anomaly</option>
+              <option value="manual_test" {% if filters.type == "manual_test" %}selected{% endif %}>Manual Test</option>
+            </select>
+          </div>
+          <div>
+            <label>Acknowledged</label>
+            <select name="ack">
+              <option value="all" {% if filters.ack == "all" %}selected{% endif %}>All</option>
+              <option value="no" {% if filters.ack == "no" %}selected{% endif %}>No</option>
+              <option value="yes" {% if filters.ack == "yes" %}selected{% endif %}>Yes</option>
+            </select>
+          </div>
+          <div class="actions" style="align-self: end;">
+            <button class="btn" type="submit">Apply Filters</button>
+          </div>
+        </form>
+
+        {% if filtered_alerts %}
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Severity</th>
+                <th>Summary</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for alert_id, created_at, severity, summary, acknowledged_at in filtered_alerts %}
+                <tr>
+                  <td>{{ created_at }}</td>
+                  <td>{{ severity }}</td>
+                  <td>{{ summary }}</td>
+                  <td>
+                    {% if acknowledged_at %}
+                      <span class="status-ok">Acknowledged</span>
+                    {% else %}
+                      <span class="status-muted">Unacknowledged</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if not acknowledged_at %}
+                      <form method="post" action="/alerts/{{ alert_id }}/ack">
+                        <button class="btn ghost" type="submit">Acknowledge</button>
+                      </form>
+                    {% else %}
+                      <span class="status-muted">—</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="empty">No alerts match the current filters.</p>
+        {% endif %}
+      </div>
+
+      <div class="panel">
+        <h2>Recent Devices</h2>
+        {% if recent_devices %}
+          <table>
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Last Seen (UTC)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ip, last_seen in recent_devices %}
+                <tr>
+                  <td>{{ ip }}</td>
+                  <td>{{ last_seen }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="empty">No device activity recorded yet.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Latest Scan Results</h2>
+      {% if latest_results %}
+        <div class="pill">{{ latest_results | length }} open ports in the latest scan</div>
+        <div style="margin-top: 14px; overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Hostname</th>
+                <th>Port</th>
+                <th>Protocol</th>
+                <th>Service</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ip, hostname, port, protocol, service, state in latest_results %}
+                <tr>
+                  <td>{{ ip }}</td>
+                  <td>{{ hostname }}</td>
+                  <td>{{ port }}</td>
+                  <td>{{ protocol }}</td>
+                  <td>{{ service }}</td>
+                  <td>{{ state }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="empty">No scan results available yet.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <h2>Device Inventory (ARP)</h2>
+      {% if inventory %}
+        <table>
+          <thead>
+            <tr>
+              <th>IP</th>
+              <th>MAC</th>
+              <th>Last Seen (UTC)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ip, mac, last_seen in inventory %}
+              <tr>
+                <td>{{ ip }}</td>
+                <td>{{ mac }}</td>
+                <td>{{ last_seen }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty">No ARP inventory available yet.</p>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer>
+    Dashboard is local-only. Use only on networks you own or have permission to monitor.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    const timeseries = {{ timeseries | tojson }};
+    if (timeseries.length) {
+      const labels = timeseries.map(item => item[0]);
+      const openPorts = timeseries.map(item => item[1]);
+      const devices = timeseries.map(item => item[2]);
+      const newDevices = timeseries.map(item => item[3]);
+      const newPorts = timeseries.map(item => item[4]);
+
+      const baseOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: { x: { display: false }, y: { beginAtZero: true } },
+      };
+
+      const chartPorts = new Chart(document.getElementById('chart-ports'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Open Ports', data: openPorts, borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.15)' },
+            { label: 'Devices', data: devices, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.15)' }
+          ]
+        },
+        options: baseOptions
+      });
+
+      const chartChanges = new Chart(document.getElementById('chart-changes'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'New Devices', data: newDevices, backgroundColor: 'rgba(34,197,94,0.6)' },
+            { label: 'New Ports', data: newPorts, backgroundColor: 'rgba(14,165,233,0.6)' }
+          ]
+        },
+        options: baseOptions
+      });
+    }
+  </script>
+</body>
+</html>

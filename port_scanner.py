@@ -249,6 +249,8 @@ def run_scan(
     do_resolve: bool,
     do_service: bool,
     show_progress: bool,
+    # emit_open controls console output for open ports (useful for the agent).
+    emit_open: bool = True,
 ) -> List[ScanResult]:
     """
     Scan all targets concurrently and return a list of open ports.
@@ -293,12 +295,13 @@ def run_scan(
 
             if result:
                 results.append(result)
-                # Print open ports immediately for feedback.
-                hostname = f" {result.hostname}" if result.hostname else ""
-                service = f" {result.service}" if result.service else ""
-                print(
-                    f"{result.ip}:{result.port}/{result.protocol} open{hostname}{service}"
-                )
+                if emit_open:
+                    # Print open ports immediately for feedback.
+                    hostname = f" {result.hostname}" if result.hostname else ""
+                    service = f" {result.service}" if result.service else ""
+                    print(
+                        f"{result.ip}:{result.port}/{result.protocol} open{hostname}{service}"
+                    )
 
         if show_progress and total_targets:
             print(file=sys.stderr)

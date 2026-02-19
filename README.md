@@ -5,6 +5,7 @@
 A simple, educational Python port scanner that attempts TCP connections across an IP range and port list to identify open ports.
 
 ## Features
+
 - Scans IPv4 ranges (start/end) or CIDR blocks.
 - Scans TCP or UDP with a selectable protocol.
 - Scans single ports, port ranges, or top N common ports.
@@ -23,19 +24,20 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-2. Run a scan:
+1. Run a scan:
 
 ```bash
 python port_scanner.py --start-ip 192.168.1.1 --end-ip 192.168.1.10 --ports 22,80,443
 ```
 
-3. Scan with CIDR and save output:
+1. Scan with CIDR and save output:
 
 ```bash
 python port_scanner.py --cidr 192.168.1.0/28 --ports 20-1024 --timeout 0.7 --workers 200 --json-out results.json --csv-out results.csv
 ```
 
 ## Web UI (Local-Only)
+
 Run a local-only web interface that wraps the scanner. This binds to 127.0.0.1
 on your machine, so users who clone the repo will only scan from their own
 computer (not your IP).
@@ -47,7 +49,57 @@ pip install -r requirements.txt
 python3 web_app.py
 ```
 
-Open http://127.0.0.1:5000 in your browser.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
+
+## Agent Mode (MVP)
+
+The agent runs scheduled scans, stores history in SQLite, and sends email alerts
+when it discovers new devices or new open ports. This is local to your machine
+and intended for networks you own or have permission to monitor.
+
+Agent extras:
+
+- CSV report per scan
+- Daily PDF summary report
+- Device inventory (best-effort MAC mapping via ARP)
+- Lightweight dashboard
+- WhatsApp alerts via Twilio (optional)
+- ML anomaly detection on scan metrics (optional)
+- Alert rate limiting
+
+1. Copy the sample config and edit it:
+
+```bash
+cp agent_config.sample.json agent_config.json
+```
+
+1. Configure Gmail SMTP:
+
+- Create a Gmail App Password and paste it into `alerts.email.app_password`.
+- Set `alerts.email.username` and `alerts.email.from_addr` to your Gmail address.
+- Set `alerts.email.to_addrs` to the list of recipients.
+
+1. Run a one-time scan:
+
+```bash
+python agent.py --once
+```
+
+1. Run the continuous agent:
+
+```bash
+python agent.py
+```
+
+Dashboard:
+
+```bash
+python agent_dashboard.py --config agent_config.json
+```
+
+Open [http://127.0.0.1:5050](http://127.0.0.1:5050)
+
+For deployment and full documentation, see [docs/AGENT.md](docs/AGENT.md).
 
 ## Demo Output
 
@@ -57,13 +109,14 @@ Open http://127.0.0.1:5000 in your browser.
 python3 -m http.server 8000
 ```
 
-2. Run the scanner in another terminal:
+1. Run the scanner in another terminal:
 
 ```bash
 python3 port_scanner.py --start-ip 127.0.0.1 --end-ip 127.0.0.1 --ports 8000 --services --progress --no-resolve
 ```
 
 Example output:
+
 ```text
 Progress: 1/1 (100.0%) | elapsed 0:00 | eta 0:00
 127.0.0.1:8000/tcp open http-alt
@@ -81,6 +134,7 @@ python port_scanner.py [--start-ip IP --end-ip IP | --cidr CIDR]
 ```
 
 ### Arguments
+
 - `--start-ip`: First IPv4 address in the scan range.
 - `--end-ip`: Last IPv4 address in the scan range.
 - `--cidr`: CIDR block (e.g., `10.0.0.0/24`).
@@ -96,9 +150,11 @@ python port_scanner.py [--start-ip IP --end-ip IP | --cidr CIDR]
 - `--progress`: Show progress and ETA during the scan.
 
 ## Output
+
 The tool prints open ports to the console and optionally saves a report:
 
 JSON:
+
 ```json
 [
   {
@@ -113,22 +169,27 @@ JSON:
 ```
 
 CSV:
+
 ```csv
 ip,hostname,port,protocol,service,state
 192.168.1.2,host-2,22,tcp,ssh,open
 ```
 
 ## Safety and Ethics
+
 Only scan networks and hosts that you own or have explicit permission to test. Unauthorized scanning may be illegal or violate policies.
 
 ## Security Notes
+
 - The web UI binds to `127.0.0.1` by default to avoid exposing scans publicly.
 - Do not change the host binding unless you understand the security risks.
 
 ## Documentation
+
 - See [docs/USAGE.md](docs/USAGE.md) for detailed usage examples.
 
 ## Tests
+
 Run the unit tests with Python's built-in `unittest` runner:
 
 ```bash
@@ -136,7 +197,8 @@ python -m unittest discover -s tests
 ```
 
 ## Project Structure
-```
+
+```text
 .
 ├── README.md
 ├── .gitignore
@@ -152,4 +214,5 @@ python -m unittest discover -s tests
 ```
 
 ## License
+
 MIT License. See [docs/USAGE.md](docs/USAGE.md) for details and notes.

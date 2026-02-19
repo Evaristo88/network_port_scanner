@@ -19,3 +19,9 @@ ENV/
 # Outputs
 *.json
 *.csv
+
+# Agent runtime files
+agent_data/
+agent_config.json
+!agent_config.sample.json
+.env

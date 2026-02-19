@@ -60,6 +60,7 @@ def index() -> str:
     results: List[Dict[str, Any]] = []
 
     form_data: Dict[str, Any] = {
+        # Defaults keep the first run simple.
         "start_ip": "127.0.0.1",
         "end_ip": "127.0.0.1",
         "cidr": "",
@@ -120,19 +121,20 @@ def index() -> str:
                         do_resolve=form_data["resolve"],
                         do_service=form_data["services"],
                         show_progress=False,
+                        emit_open=False,
                     )
 
-                    for item in scan_results:
-                        results.append(
-                            {
-                                "ip": item.ip,
-                                "hostname": item.hostname or "",
-                                "port": item.port,
-                                "protocol": item.protocol,
-                                "service": item.service or "",
-                                "state": item.state,
-                            }
-                        )
+                    results.extend(
+                        {
+                            "ip": item.ip,
+                            "hostname": item.hostname or "",
+                            "port": item.port,
+                            "protocol": item.protocol,
+                            "service": item.service or "",
+                            "state": item.state,
+                        }
+                        for item in scan_results
+                    )
 
     return render_template(
         "index.html",
